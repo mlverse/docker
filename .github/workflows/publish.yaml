@@ -6,7 +6,11 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: cuda
+  DISTRIBUTION: focal
+  R_VERSION: release
+  CUDA_VERSION: 11.6.2
+  CUDNN_VERSION: 8
 
 jobs:
   build-and-push-image:
@@ -37,7 +41,11 @@ jobs:
         with:
           context: ./cuda
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.CUDA_VERSION}}-${{env.R_VERSION}}-${{DISTRIBUTION}}'
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            DISTRIBUTION=bionic
+            DISTRIBUTION=${{env.DISTRIBUTION}}
+            R_VERSION=${{env.R_VERSION}}
+            CUDA_VERSION=${{env.CUDA_VERSION}}
+            CUDNN_VERSION=${{env.CUDNN_VERSION}}
+
