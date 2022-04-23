@@ -41,7 +41,7 @@ jobs:
         with:
           context: ./cuda
           push: true
-          tags: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.CUDA_VERSION}}-${{env.R_VERSION}}-${{DISTRIBUTION}}'
+          tags: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.CUDA_VERSION}}-${{env.R_VERSION}}-${{env.DISTRIBUTION}}'
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             DISTRIBUTION=${{env.DISTRIBUTION}}
