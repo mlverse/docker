@@ -4,16 +4,21 @@ on:
   push:
     branches: ['main']
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: dfalbel/cuda
-  DISTRIBUTION: focal
-  R_VERSION: release
-  CUDA_VERSION: 11.6.2
-  CUDNN_VERSION: 8
-
 jobs:
   build-and-push-image:
+    matrix:
+      distribution: ["focal", "bionic"]
+      cuda_version: ["11.6.2", "11.5.2", "11.4.2", "11.3.0", "11.2.2", "11.1.1"]
+      r_version: ["release", "4.1", "4.0", "3.6"]
+
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: dfalbel/cuda
+      DISTRIBUTION: ${{ matrix.distribution }}
+      R_VERSION: ${{ matrix.r_version }}
+      CUDA_VERSION: ${{ matrix.cuda_version }}
+      CUDNN_VERSION: 8
+
     runs-on: ubuntu-latest
     permissions:
       contents: read
