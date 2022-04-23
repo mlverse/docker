@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: mlcverse/cuda
+  IMAGE_NAME: dfalbel/cuda
   DISTRIBUTION: focal
   R_VERSION: release
   CUDA_VERSION: 11.6.2
