@@ -3,14 +3,40 @@ name: Create and publish a Docker image
 on:
   push:
     branches: ['main']
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+    inputs:
+      distribution:
+        description: "Ubuntu distribution"
+      cuda_version:
+        description: "Cuda version"
+      r_version:
+        description: "R version passed to rim"
 
 jobs:
+  create-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: "Select matrix"
+        run: |
+          if ${{ github.event === 'workflow_dispatch' }}
+          then
+            echo ::set-output name=matrix::{\"distribution\": [${{ github.event.inputs.distribution }}],\"cuda_version\":[${{ github.event.inputs.cuda_version }}],\"r_version\":[${{ github.event.inputs.r_version }}]}
+          fi
+
+          if ${{ github.event === 'schedule' || github.event === 'push'}}
+          then
+            echo ::set-output name=matrix::{\"distribution\": [\"focal\"],\"cuda_version\":[\ "11.6.2\", \"11.5.2\", \"11.4.2\", \"11.3.0\", \"11.2.2\", \"11.1.1\"],\"r_version\":[\"release\", \"devel\"]}
+          fi
+
   build-and-push-image:
+    needs: create-matrix
+
     strategy:
-      matrix:
-        distribution: ["focal", "bionic"]
-        cuda_version: ["11.6.2", "11.5.2", "11.4.2", "11.3.0", "11.2.2", "11.1.1"]
-        r_version: ["release", "4.1", "4.0", "3.6"]
+      matrix: ${{fromJson(needs.create-matrix.outputs.matrix)}}
 
     env:
       REGISTRY: ghcr.io
