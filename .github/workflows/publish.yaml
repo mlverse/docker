@@ -23,12 +23,12 @@ jobs:
       - name: "Select matrix"
         id: "set-matrix"
         run: |
-          if ${{ github.event == 'workflow_dispatch' }}
+          if ${{ github.event_name == 'workflow_dispatch' }}
           then
             echo ::set-output name=matrix::{\"distribution\": [${{ github.event.inputs.distribution }}],\"cuda_version\":[${{ github.event.inputs.cuda_version }}],\"r_version\":[${{ github.event.inputs.r_version }}]}
           fi
 
-          if ${{ github.event == 'schedule' || github.event == 'push'}}
+          if ${{ github.event_name == 'schedule' || github.event == 'push'}}
           then
             echo ::set-output name=matrix::{\"distribution\": [\"focal\"],\"cuda_version\":[\"11.6.2\", \"11.5.2\", \"11.4.2\", \"11.3.0\", \"11.2.2\", \"11.1.1\"],\"r_version\":[\"release\", \"devel\"]}
           fi
