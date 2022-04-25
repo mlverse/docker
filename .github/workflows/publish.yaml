@@ -32,7 +32,7 @@ jobs:
 
           if ${{ github.event_name == 'schedule' || github.event_name == 'push'}}
           then
-            echo ::set-output name=matrix::{\"distribution\": [\"focal\"],\"cuda_version\":[\"11.6.2\", \"11.5.2\", \"11.4.2\", \"11.3.0\", \"11.2.2\", \"11.1.1\"],\"r_version\":[\"release\", \"devel\"]}
+            echo ::set-output name=matrix::{\"distribution\": [\"focal\"],\"cuda_version\":[\"11.6.2\", \"11.5.2\", \"11.4.2\", \"11.3.0\", \"11.2.2\", \"11.1.1\"],\"r_version\":[\"release\", \"devel\", \"4.2\", \"4.1\", \"4.0\", \"3.6\"]}
           fi
 
   build-and-push-image:
@@ -43,7 +43,7 @@ jobs:
 
     env:
       REGISTRY: ghcr.io
-      IMAGE_NAME: dfalbel/cuda
+      IMAGE_NAME: mlverse/cuda
       DISTRIBUTION: ${{ matrix.distribution }}
       R_VERSION: ${{ matrix.r_version }}
       CUDA_VERSION: ${{ matrix.cuda_version }}
