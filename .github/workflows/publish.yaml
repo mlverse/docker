@@ -27,7 +27,7 @@ jobs:
 
           if ${{ github.event_name == 'workflow_dispatch' }}
           then
-            echo ::set-output name=matrix::{\"distribution\": [${{ github.event.inputs.distribution }}],\"cuda_version\":[${{ github.event.inputs.cuda_version }}],\"r_version\":[${{ github.event.inputs.r_version }}]}
+            echo ::set-output name=matrix::{\"distribution\": [\"${{ github.event.inputs.distribution }}\"],\"cuda_version\":[\"${{ github.event.inputs.cuda_version }}\"],\"r_version\":[\"${{ github.event.inputs.r_version }}\"]}
           fi
 
           if ${{ github.event_name == 'schedule' || github.event_name == 'push'}}
