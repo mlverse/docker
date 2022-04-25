@@ -29,7 +29,7 @@ jobs:
 
           if ${{ github.event == 'schedule' || github.event == 'push'}}
           then
-            echo ::set-output name=matrix::{\"distribution\": [\"focal\"],\"cuda_version\":[\ "11.6.2\", \"11.5.2\", \"11.4.2\", \"11.3.0\", \"11.2.2\", \"11.1.1\"],\"r_version\":[\"release\", \"devel\"]}
+            echo ::set-output name=matrix::{\"distribution\": [\"focal\"],\"cuda_version\":[\"11.6.2\", \"11.5.2\", \"11.4.2\", \"11.3.0\", \"11.2.2\", \"11.1.1\"],\"r_version\":[\"release\", \"devel\"]}
           fi
 
   build-and-push-image:
