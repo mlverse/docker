@@ -50,7 +50,6 @@ ENV TZ UTC
 
 RUN curl -Ls https://github.com/r-lib/rig/releases/download/latest/rig-linux-latest.tar.gz | sudo tar xz -C /usr/local && \
   rig add ${R_VERSION} && \
-  rig default "$(rig list)" && \
   rm -rf /var/lib/apt/lists/*
 
 RUN Rscript -e "file.copy('tmp/Rprofile.site', file.path(R.home(), 'etc', 'Rprofile.site'))"
