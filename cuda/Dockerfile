@@ -48,10 +48,9 @@ ENV LANG C.UTF-8
 # Set default timezone
 ENV TZ UTC
 
-RUN curl -OL https://github.com/gaborcsardi/rim/releases/download/v0.2.3/rim-linux-0.2.3.tar.gz && \
-  sudo tar xzf rim-linux-0.2.3.tar.gz -C /usr/local && \
-  rim add ${R_VERSION} && \
-  rim default "$(rim list)" && \
+RUN curl -Ls https://github.com/r-lib/rig/releases/download/latest/rig-linux-latest.tar.gz | sudo tar xz -C /usr/local && \
+  rig add ${R_VERSION} && \
+  rig default "$(rig list)" && \
   rm -rf /var/lib/apt/lists/*
 
 RUN Rscript -e "file.copy('tmp/Rprofile.site', file.path(R.home(), 'etc', 'Rprofile.site'))"
