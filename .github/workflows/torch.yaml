@@ -1,4 +1,4 @@
-name: CPU Images
+name: torch images
 
 on:
   push:
