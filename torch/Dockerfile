@@ -13,5 +13,5 @@ ARG TORCH_VERSION="v0.10.0"
 RUN export V="${TORCH_VERSION}" && \
     export TORCH_INSTALL=1 && \
     Rscript -e "v <- Sys.getenv('V'); if (v == 'cran') pak::pkg_install('torch') else pak::pkg_install(sprintf('mlverse/torch@%s', v));" && \
-    Rscript -e "pak::pak_cleanup(force=TRUE)" && \
+    Rscript -e "pak::pak_cleanup(force=TRUE, metadata_cache=FALSE)" && \
     rm -rf /tmp/*
