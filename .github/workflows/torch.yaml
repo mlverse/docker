@@ -1,0 +1,88 @@
+name: CPU Images
+
+on:
+  push:
+    branches: ['main']
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+    inputs:
+      distribution:
+        description: "Ubuntu distribution"
+      r_version:
+        description: "R version passed to rig"
+      runtime:
+        description: "Runtime to use, cpu or cuda"
+      torch_version:
+        description: "The torch version to use"
+
+jobs:
+  create-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: "Select matrix"
+        id: "set-matrix"
+        run: |
+          echo "${{github.event_name}}"
+
+          if ${{ github.event_name == 'workflow_dispatch' }}
+          then
+            echo ::set-output name=matrix::{\"distribution\": [\"${{ github.event.inputs.distribution }}\"],\"r_version\":[\"${{ github.event.inputs.r_version }}\", \"runtime\":[\"${{ github.event.inputs.runtime }}\", \"torch_version\":[\"${{ github.event.inputs.torch_version }}\"]}
+          fi
+
+          if ${{ github.event_name == 'schedule' || github.event_name == 'push'}}
+          then
+            echo ::set-output name=matrix::{\"distribution\": [\"focal\"],\"r_version\":[\"release\"], \"runtime\":[\"cpu\",\"cuda\"], \"torch_version\":[\"v0.10.0\", \"main\"]}
+          fi
+
+  build-and-push-image:
+    needs: create-matrix
+
+    strategy:
+      matrix: ${{fromJson(needs.create-matrix.outputs.matrix)}}
+
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: mlverse/torch
+      DISTRIBUTION: ${{ matrix.distribution }}
+      R_VERSION: ${{ matrix.r_version }}
+      TORCH_VERSION: ${{ matrix.torch_version }}
+      RUNTIME: ${{ matrix.runtime }}
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: ./torch
+          push: true
+          tags: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.RUNTIME}}-${{env.TORCH_VERSION}}-${{env.R_VERSION}}-${{env.DISTRIBUTION}}'
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            DISTRIBUTION=${{env.DISTRIBUTION}}
+            R_VERSION=${{env.R_VERSION}}
+            TORCH_VERSION=${{env.TORCH_VERSION}}
+            RUNTIME=${{env.RUNTIME}}
+
